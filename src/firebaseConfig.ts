@@ -1,4 +1,5 @@
 import * as firebase from 'firebase'
+import 'firebase/storage';
 
 const config = {
     apiKey: "AIzaSyAmgItH1UttGw2CuLxPgCDsB-q9gExU68w",
@@ -11,6 +12,12 @@ const config = {
 };
 
 firebase.initializeApp(config);
+
+const storage = firebase.storage();
+
+export {
+    storage, firebase as default
+}
 
 export async function loginUser(email: string, password: string): Promise<string> {
     try {
@@ -48,11 +55,40 @@ export async function getUid(): Promise<string | undefined> {
     }
 }
 
-export async function getCollection(collection: string, uid: string): Promise<any> {
+export async function getDocumentFromCollection(collection: string, uid: string): Promise<any> {
     try {
         let data = await firebase.firestore().collection(collection).doc(uid).get().then((document) => {
             if (document.exists) {
                 return document.data()
+            } else {
+                return 'Does not exist';
+            }
+        });
+        return data;
+    } catch (error) {
+        return error.message as string;
+    }
+}
+export async function getQueriedDocuments(collection: string, attr: string): Promise<any> {
+    try {
+        let data = await firebase.firestore().collection(collection).where(attr, '==', true).get().then((documents) => {
+            if (documents) {
+                return documents.docs.map(doc => doc.data());
+            } else {
+                return 'Does not exist';
+            }
+        });
+        return data;
+    } catch (error) {
+        return error.message as string;
+    }
+}
+
+export async function getWholeCollection(collection: string): Promise<any> {
+    try {
+        let data = await firebase.firestore().collection(collection).get().then((documents) => {
+            if (documents) {
+                return documents.docs.map(doc => doc.data());
             } else {
                 return 'Does not exist';
             }
