@@ -23,5 +23,6 @@ export interface ICompetitionEntry {
 export enum ICompetitionMode {
     live = 'live',
     upcoming = 'upcoming',
-    archived = 'archived'
+    archived = 'archived',
+    completed = 'completed'
 }

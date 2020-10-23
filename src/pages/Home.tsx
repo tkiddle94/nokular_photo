@@ -1,15 +1,20 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSegment, IonSegmentButton, IonLabel } from '@ionic/react';
+import { IonContent, IonThumbnail, IonHeader, IonPage, IonTitle, IonToolbar, IonSegment, IonSegmentButton, IonLabel, IonModal } from '@ionic/react';
 import React, { useState } from 'react';
 import { CompetitionCard } from '../components/CompetitionCard';
 import { ImageUploader } from '../components/ImageUploader';
+import { CompetitionDetail } from '../components/CompetitionDetail'
 import './Home.scss';
 import uniqid from 'uniqid';
-import { getQueriedDocuments } from '../firebaseConfig';
+import { getQueriedDocuments, logout } from '../firebaseConfig';
 import { ICompetition, ICompetitionMode } from '../interfaces';
+import { useHistory } from "react-router-dom";
+
 const Home: React.FC = () => {
 
   const [competitions, setCompetitions] = useState<ICompetition[] | undefined>(undefined);
   const [competitionMode, setCompetitionMode] = useState<string | undefined>('live');
+  const [showCompetitionDetail, setShowCompetitionDetail] = useState<string | undefined>(undefined);
+  const history = useHistory();
 
   React.useEffect(() => {
     console.log('uniq:', uniqid());
@@ -29,9 +34,10 @@ const Home: React.FC = () => {
       return ICompetitionMode.archived;
     }
   }
+
   function loadCompetitions() {
     if (competitionMode) {
-      getQueriedDocuments('competitions', competitionMode).then((competitionData) => {
+      getQueriedDocuments('competitions', competitionMode, true).then((competitionData) => {
         if (competitionData?.length > 0) {
           setCompetitions(competitionData as ICompetition[]);
         }
@@ -39,21 +45,36 @@ const Home: React.FC = () => {
     }
   }
 
+  function logOut() {
+    logout().then((ret) => {
+      if (ret === true) {
+        history.push('/login')
+      } else {
+        //TODO LOGOUT ERROR;
+      }
+    });
+  }
+
   function renderCompetitionCards(competition: ICompetition) {
     return <CompetitionCard
+      key={competition.id}
       title={competition.title}
       imgSrc={competition.imgSrc}
       description={competition.description}
       competitionMode={getCompetitionMode(competition)}
       startDate={competition.startDate}
       endDate={competition.endDate}
-      onCardClicked={() => console.log('card clicked')}></CompetitionCard>
+      onCardClicked={() => setShowCompetitionDetail(competition.id)} />;
   }
+
   return (
     <IonPage>
       <IonHeader collapse="condense">
         <IonToolbar>
           <IonTitle >Compete</IonTitle>
+          <IonThumbnail slot="end" onClick={() => logOut()}>
+            Log out
+          </IonThumbnail>
         </IonToolbar>
       </IonHeader>
       <IonContent >
@@ -71,6 +92,16 @@ const Home: React.FC = () => {
         {competitions?.map((competition) => renderCompetitionCards(competition))}
         <ImageUploader></ImageUploader>
       </IonContent>
+      <IonModal
+        isOpen={showCompetitionDetail !== undefined}
+        swipeToClose={true}
+      >
+        <CompetitionDetail
+          title={'Competition'}
+          competitionRef={showCompetitionDetail ? showCompetitionDetail : ''}
+          close={() => setShowCompetitionDetail(undefined)}
+        />
+      </IonModal>
     </IonPage>
   );
 };

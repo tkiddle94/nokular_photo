@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonInput, IonButton, IonPage, IonLabel, IonAlert, IonContent, IonTitle, IonToolbar, IonThumbnail, IonIcon, IonHeader, IonDatetime } from '@ionic/react';
+import { IonInput, IonButton, IonPage, IonLabel, IonAlert, IonContent, IonTitle, IonToolbar, IonThumbnail, IonIcon, IonHeader } from '@ionic/react';
 import './RegisterUser.scss';
 import { registerUser, writeToCollection } from '../firebaseConfig'
 import { close, checkmarkCircleOutline } from 'ionicons/icons';
@@ -14,7 +14,7 @@ export class RegisterUser extends React.Component<IRegisterUserProps> {
     private emailValidity: boolean;
     private password: string;
     private repeatedPassword: string;
-    private userInfo: { name: string, email: string, phone: number, address: string, dob: string };
+    private userInfo: { name: string, email: string };
     private warningMessage: string = '';
     private registerButton: HTMLIonButtonElement;
     private emailIcon: HTMLIonIconElement;
@@ -80,7 +80,7 @@ export class RegisterUser extends React.Component<IRegisterUserProps> {
             if ((ret as firebase.auth.UserCredential).user) {
                 let userDetails: firebase.auth.UserCredential = (ret as firebase.auth.UserCredential);
                 let uid = userDetails.user?.uid;
-                writeToCollection('users', uid!, { userName: this.userInfo.name, dob: this.userInfo.dob, phone: this.userInfo.phone, address: this.userInfo.address }).then((userNameRet) => {
+                writeToCollection('users', uid!, { userName: this.userInfo.name, email: this.userInfo.email, id: uid }).then((userNameRet) => {
                     if (userNameRet === undefined) {
                         this.props.onUserRegistered();
                     }

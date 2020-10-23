@@ -69,9 +69,9 @@ export async function getDocumentFromCollection(collection: string, uid: string)
         return error.message as string;
     }
 }
-export async function getQueriedDocuments(collection: string, attr: string): Promise<any> {
+export async function getQueriedDocuments(collection: string, attr: string, value: any): Promise<any> {
     try {
-        let data = await firebase.firestore().collection(collection).where(attr, '==', true).get().then((documents) => {
+        let data = await firebase.firestore().collection(collection).where(attr, '==', value).get().then((documents) => {
             if (documents) {
                 return documents.docs.map(doc => doc.data());
             } else {
