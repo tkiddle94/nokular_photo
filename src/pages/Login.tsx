@@ -22,14 +22,14 @@ const Login: React.FC = () => {
                 history.push('/homePage');
             } 
         });
-        // setTimeout(() => {
+        setTimeout(() => {
             
-        //     isUserLoggedIn().then((ret) => {
-        //         if (ret) {
-        //             history.push('/homePage');
-        //         } 
-        //     });
-        // }, 1000);
+            isUserLoggedIn().then((ret) => {
+                if (ret) {
+                    history.push('/homePage');
+                } 
+            });
+        }, 1000);
     }, [])
 
     function onLogin() {
