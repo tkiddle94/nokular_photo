@@ -101,7 +101,7 @@ export async function getWholeCollection(collection: string): Promise<any> {
 
 export async function writeToCollection(collection: string, uid: string, dataToSet: any): Promise<any> {
     try {
-        await firebase.firestore().collection(collection).doc(uid).set(dataToSet, { merge: true }).then(() => {
+        return await firebase.firestore().collection(collection).doc(uid).set(dataToSet, { merge: true }).then(() => {
             return true;
         });
     } catch (error) {

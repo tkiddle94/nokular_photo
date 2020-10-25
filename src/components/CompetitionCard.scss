@@ -1,16 +1,50 @@
-ion-card {
-    height: 12rem;
+.subtitle-container {
+    position: absolute;
+    bottom: 0.25rem;
+    left: 1rem;
+    ion-card-subtitle:not(.stable) {
+        text-transform: initial;
+        color: black;
+    }
 }
+
+.vote-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+ion-card {
+    height: 14rem;
+}
+
+ion-card.entry {
+    height: 13rem;
+}
+
+ion-card.voted {
+    border: 1px solid #99D66A;
+}
+
 ion-card-header {
     position: absolute;
-    bottom: 0;
+    top: 0;
+    padding-top: 1rem;
 }
 
-img {
-    position: absolute;
+.image-container {
+    position: relative;
+    overflow: hidden;
+    height: 10rem;
+    img {
+        position: absolute;
+    }
 }
 
-ion-card-title,
 ion-card-subtitle {
+    color: #adadad;
+}
+
+ion-card-title {
     color: white;
 }

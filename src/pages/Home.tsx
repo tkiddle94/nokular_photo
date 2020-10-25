@@ -1,34 +1,44 @@
 import { IonContent, IonThumbnail, IonHeader, IonPage, IonTitle, IonToolbar, IonSegment, IonSegmentButton, IonLabel, IonModal } from '@ionic/react';
 import React, { useState } from 'react';
 import { CompetitionCard } from '../components/CompetitionCard';
-import { ImageUploader } from '../components/ImageUploader';
 import { CompetitionDetail } from '../components/CompetitionDetail'
 import './Home.scss';
 import uniqid from 'uniqid';
-import { getQueriedDocuments, logout } from '../firebaseConfig';
+import { getQueriedDocuments, logout, getUid } from '../firebaseConfig';
 import { ICompetition, ICompetitionMode } from '../interfaces';
 import { useHistory } from "react-router-dom";
+import { CompetitionEntry } from '../components/CompetitionEntry';
 
 const Home: React.FC = () => {
 
   const [competitions, setCompetitions] = useState<ICompetition[] | undefined>(undefined);
   const [competitionMode, setCompetitionMode] = useState<string | undefined>('live');
-  const [showCompetitionDetail, setShowCompetitionDetail] = useState<string | undefined>(undefined);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [selectedCompetition, setSelectedCompetition] = useState<ICompetition | undefined>(undefined);
   const history = useHistory();
 
   React.useEffect(() => {
     console.log('uniq:', uniqid());
     loadCompetitions();
-  }, [])
+    loadUserData();
+  }, []);
 
   React.useEffect(() => {
     loadCompetitions();
-  }, [competitionMode])
+  }, [competitionMode]);
 
-  function getCompetitionMode(competition: ICompetition): ICompetitionMode {
-    if (competition.live) {
+  function loadUserData() {
+    getUid().then((ret) => {
+      console.log('load user data', ret);
+      if (ret) {
+        setUserId(ret);
+      }
+    })
+  }
+  function getCompetitionMode(competition: ICompetition | undefined): ICompetitionMode {
+    if (competition?.live) {
       return ICompetitionMode.live;
-    } else if (competition.upcoming) {
+    } else if (competition?.upcoming) {
       return ICompetitionMode.upcoming;
     } else {
       return ICompetitionMode.archived;
@@ -64,7 +74,8 @@ const Home: React.FC = () => {
       competitionMode={getCompetitionMode(competition)}
       startDate={competition.startDate}
       endDate={competition.endDate}
-      onCardClicked={() => setShowCompetitionDetail(competition.id)} />;
+      isEntry={false}
+      onCardClicked={() => setSelectedCompetition(competition)} />;
   }
 
   return (
@@ -90,16 +101,28 @@ const Home: React.FC = () => {
           </IonSegmentButton>
         </IonSegment>
         {competitions?.map((competition) => renderCompetitionCards(competition))}
-        <ImageUploader></ImageUploader>
       </IonContent>
       <IonModal
-        isOpen={showCompetitionDetail !== undefined}
+        isOpen={selectedCompetition !== undefined && !selectedCompetition.upcoming}
         swipeToClose={true}
       >
         <CompetitionDetail
-          title={'Competition'}
-          competitionRef={showCompetitionDetail ? showCompetitionDetail : ''}
-          close={() => setShowCompetitionDetail(undefined)}
+          title={selectedCompetition?.title || ''}
+          competitionRef={selectedCompetition?.id || ''}
+          competitionMode={getCompetitionMode(selectedCompetition)}
+          currentUserRef={userId}
+          close={() => setSelectedCompetition(undefined)}
+        />
+      </IonModal>
+      <IonModal
+        isOpen={selectedCompetition !== undefined && selectedCompetition.upcoming}
+        swipeToClose={true}
+      >
+        <CompetitionEntry
+          userRef={userId}
+          competitionRef={selectedCompetition?.id}
+          startDate={selectedCompetition?.startDate}
+          close={() => setSelectedCompetition(undefined)}
         />
       </IonModal>
     </IonPage>
