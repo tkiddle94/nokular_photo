@@ -1,0 +1,63 @@
+.image-uploader input{
+    height: 0;
+    width: 0;
+}
+
+.image-uploader {
+    margin-top: 1rem;
+    ion-label {
+        margin-left: 2rem;
+    }
+    .no-image {
+        height: 10rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .button-row {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        .button-container {
+            ion-button {
+                width: 8rem;
+            }
+        }
+    }
+
+    .preview-image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1rem 0;
+
+        img {
+            max-height: 10rem;
+            margin: 0 1rem;
+        }
+    }
+}
+
+.new-entry-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    padding: 2rem;
+    .padding-container {
+        width: 100%;
+        padding: 1rem 0;
+        .row {
+            display: flex;
+            .hide {
+                display: none;
+            }
+        }
+    }
+}
+
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

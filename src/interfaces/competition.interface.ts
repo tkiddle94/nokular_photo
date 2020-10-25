@@ -14,14 +14,16 @@ export interface ICompetitionEntry {
     id: string,
     competitionRef: string,
     userRef: string,
+    userName: string,
     imgSrc: string,
     title: string,
     description: string,
-    votes: number
+    voterRefs?: string[]
 }
 
 export enum ICompetitionMode {
     live = 'live',
     upcoming = 'upcoming',
-    archived = 'archived'
+    archived = 'archived',
+    completed = 'completed'
 }
