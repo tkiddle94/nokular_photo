@@ -75,7 +75,7 @@ const Home: React.FC = () => {
       hasBeenCompleted={hasBeenCompleted}
       isEntry={false}
       onCardClicked={() => {
-        if (!hasBeenCompleted) {
+        if (!hasBeenCompleted || competitionMode !== ICompetitionMode.upcoming) {
           setSelectedCompetition(competition)
         }
       }} />;
