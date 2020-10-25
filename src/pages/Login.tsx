@@ -44,7 +44,6 @@ const Login: React.FC = () => {
     function validateLoginButton() {
         const email = emailInput.value as string;
         const password = passwordInput.value as string;
-        console.log('valid', email, password);
         const isDisabled = !(email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) && password?.length > 5);
         loginButton.disabled = isDisabled;
         loginButton.color = isDisabled ? 'secondary' : 'primary';
