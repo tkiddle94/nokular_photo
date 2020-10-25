@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { CompetitionCard } from '../components/CompetitionCard';
 import { CompetitionDetail } from '../components/CompetitionDetail'
 import './Home.scss';
-import uniqid from 'uniqid';
 import { getQueriedDocuments, logout, getUid } from '../firebaseConfig';
 import { ICompetition, ICompetitionMode } from '../interfaces';
 import { useHistory } from "react-router-dom";
@@ -18,7 +17,6 @@ const Home: React.FC = () => {
   const history = useHistory();
 
   React.useEffect(() => {
-    console.log('uniq:', uniqid());
     loadCompetitions();
     loadUserData();
   }, []);
@@ -29,7 +27,6 @@ const Home: React.FC = () => {
 
   function loadUserData() {
     getUid().then((ret) => {
-      console.log('load user data', ret);
       if (ret) {
         setUserId(ret);
       }

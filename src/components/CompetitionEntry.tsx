@@ -35,10 +35,8 @@ export class CompetitionEntry extends React.Component<ICompetitionEntryProps> {
 
     componentDidMount() {
         if (this.props.userRef) {
-            console.log('user data', this.props.userRef);
             getQueriedDocuments('users', 'id', this.props.userRef).then((userData) => {
                 this.userName = userData[0].userName;
-                console.log('user name', this.userName, userData)
             });
         }
     }
@@ -46,7 +44,6 @@ export class CompetitionEntry extends React.Component<ICompetitionEntryProps> {
     onFileChanged(ev: any) {
         if (ev.target.files[0]) {
             this.image = ev.target.files[0];
-            console.log('image', this.image);
             this.reader.onload = (e) => {
                 if (typeof e.target?.result === 'string') {
                     this.imageEl.src = e.target?.result;
