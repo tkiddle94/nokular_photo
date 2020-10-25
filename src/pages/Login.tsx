@@ -81,6 +81,7 @@ const Login: React.FC = () => {
                 <IonModal
                     isOpen={showModal}
                     swipeToClose={true}
+                    onDidDismiss={() => setShowModal(false)}
                 >
                     <RegisterUser
                         onUserRegistered={() => newUserRegistered()}

@@ -108,6 +108,7 @@ const Home: React.FC = () => {
       <IonModal
         isOpen={selectedCompetition !== undefined && !selectedCompetition.upcoming}
         swipeToClose={true}
+        onDidDismiss={() => setSelectedCompetition(undefined)}
       >
         <CompetitionDetail
           title={selectedCompetition?.title || ''}
@@ -120,6 +121,10 @@ const Home: React.FC = () => {
       <IonModal
         isOpen={selectedCompetition !== undefined && selectedCompetition.upcoming}
         swipeToClose={true}
+        onDidDismiss={() => {
+          setSelectedCompetition(undefined);
+          loadCompetitions();
+        }}
       >
         <CompetitionEntry
           userRef={userId}
