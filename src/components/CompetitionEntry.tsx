@@ -2,14 +2,13 @@ import React from 'react';
 import { IonAlert, IonLoading, IonPage, IonLabel, IonInput, IonTextarea, IonButton, IonIcon, IonHeader, IonToolbar, IonThumbnail, IonTitle, IonContent } from '@ionic/react';
 import { close, imageOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { storage, getQueriedDocuments, writeToCollection } from '../firebaseConfig'
-import { ICompetitionEntry } from '../interfaces';
+import { ICompetition, ICompetitionEntry } from '../interfaces';
 import uniqid from 'uniqid';
 import './CompetitionEntry.scss';
 
 interface ICompetitionEntryProps {
     userRef: string | undefined;
-    competitionRef: string | undefined;
-    startDate: string | undefined;
+    selectedCompetition: ICompetition | undefined;
     close: any;
 }
 
@@ -35,18 +34,18 @@ export class CompetitionEntry extends React.Component<ICompetitionEntryProps> {
 
     componentDidMount() {
         if (this.props.userRef) {
-            console.log('user data', this.props.userRef);
             getQueriedDocuments('users', 'id', this.props.userRef).then((userData) => {
-                this.userName = userData[0].userName;
-                console.log('user name', this.userName, userData)
+                if (userData?.length > 0) {
+                    this.userName = userData[0].userName;
+                }
             });
         }
+
     }
 
     onFileChanged(ev: any) {
         if (ev.target.files[0]) {
             this.image = ev.target.files[0];
-            console.log('image', this.image);
             this.reader.onload = (e) => {
                 if (typeof e.target?.result === 'string') {
                     this.imageEl.src = e.target?.result;
@@ -63,22 +62,33 @@ export class CompetitionEntry extends React.Component<ICompetitionEntryProps> {
     }
 
     saveNewEntry() {
-        if (this.props.competitionRef && this.props.userRef) {
+        if (this.props.selectedCompetition && this.props.userRef) {
             const id = uniqid();
             const newEntry: ICompetitionEntry = {
                 id,
-                competitionRef: this.props.competitionRef,
+                competitionRef: this.props.selectedCompetition.id,
                 title: this.title,
                 description: this.description,
                 imgSrc: this.url,
                 userName: this.userName,
                 userRef: this.props.userRef
             }
+            const entrantRefs: string[] = this.props.selectedCompetition?.entrantRefs ? this.props.selectedCompetition.entrantRefs : [];
+            let updatedCompetition = this.props.selectedCompetition;
+            updatedCompetition.entrantRefs = [this.props.userRef, ...entrantRefs];
             writeToCollection('competitionEntries', id, newEntry).then((ret) => {
                 if (ret === true) {
-                    this.isLoading = false;
-                    this.showSubmissionComplete = true;
-                    this.forceUpdate();
+                    writeToCollection('competitions', updatedCompetition.id, updatedCompetition).then((competitionRet) => {
+                        if (competitionRet === true) {
+                            this.isLoading = false;
+                            this.showSubmissionComplete = true;
+                            this.forceUpdate();
+                        } else if (competitionRet) {
+                            this.isLoading = false;
+                            this.errorMessage = ret;
+                            this.forceUpdate();
+                        }
+                    });
                 } else if (ret) {
                     this.isLoading = false;
                     this.errorMessage = ret;
@@ -184,7 +194,7 @@ export class CompetitionEntry extends React.Component<ICompetitionEntryProps> {
                     isOpen={this.showSubmissionComplete}
                     onDidDismiss={() => this.props.close()}
                     header={'Congratulations'}
-                    message={`Your entry has been submitted, come back on ${this.props.startDate} to get voting!`}
+                    message={`Your entry has been submitted, come back on ${this.props.selectedCompetition?.startDate} to get voting!`}
                     buttons={['Okay']}
                 />
             </IonContent>

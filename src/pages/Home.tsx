@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { CompetitionCard } from '../components/CompetitionCard';
 import { CompetitionDetail } from '../components/CompetitionDetail'
 import './Home.scss';
-import uniqid from 'uniqid';
 import { getQueriedDocuments, logout, getUid } from '../firebaseConfig';
 import { ICompetition, ICompetitionMode } from '../interfaces';
 import { useHistory } from "react-router-dom";
@@ -18,7 +17,6 @@ const Home: React.FC = () => {
   const history = useHistory();
 
   React.useEffect(() => {
-    console.log('uniq:', uniqid());
     loadCompetitions();
     loadUserData();
   }, []);
@@ -29,7 +27,6 @@ const Home: React.FC = () => {
 
   function loadUserData() {
     getUid().then((ret) => {
-      console.log('load user data', ret);
       if (ret) {
         setUserId(ret);
       }
@@ -66,6 +63,7 @@ const Home: React.FC = () => {
   }
 
   function renderCompetitionCards(competition: ICompetition) {
+    const hasBeenCompleted = competition?.entrantRefs?.includes(userId || '')
     return <CompetitionCard
       key={competition.id}
       title={competition.title}
@@ -74,8 +72,13 @@ const Home: React.FC = () => {
       competitionMode={getCompetitionMode(competition)}
       startDate={competition.startDate}
       endDate={competition.endDate}
+      hasBeenCompleted={hasBeenCompleted}
       isEntry={false}
-      onCardClicked={() => setSelectedCompetition(competition)} />;
+      onCardClicked={() => {
+        if (!hasBeenCompleted || competitionMode !== ICompetitionMode.upcoming) {
+          setSelectedCompetition(competition)
+        }
+      }} />;
   }
 
   return (
@@ -120,9 +123,11 @@ const Home: React.FC = () => {
       >
         <CompetitionEntry
           userRef={userId}
-          competitionRef={selectedCompetition?.id}
-          startDate={selectedCompetition?.startDate}
-          close={() => setSelectedCompetition(undefined)}
+          selectedCompetition={selectedCompetition}
+          close={() => {
+            setSelectedCompetition(undefined);
+            loadCompetitions();
+          }}
         />
       </IonModal>
     </IonPage>

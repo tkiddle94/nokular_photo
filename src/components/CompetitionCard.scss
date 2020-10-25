@@ -48,3 +48,14 @@ ion-card-subtitle {
 ion-card-title {
     color: white;
 }
+
+ion-chip {
+    background: #99D66A;
+    color: white;
+    position: absolute;
+    top: 1rem;
+    right: 0.5rem;
+    ion-icon {
+        color: white;
+    }
+}

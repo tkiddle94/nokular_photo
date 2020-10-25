@@ -24,6 +24,9 @@
     align-items: center;
     justify-content: center;
     margin-top: 2rem;
+    img {
+        width: calc(100% - 2rem);
+    }
 }
 
 ion-img {

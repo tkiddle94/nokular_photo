@@ -39,11 +39,15 @@ export class CompetitionDetail extends React.Component<ICompetitionDetailProps> 
     loadCompetitionEntries() {
         getQueriedDocuments('competitionEntries', 'competitionRef', this.props.competitionRef).then((competitionEntries) => {
             if (competitionEntries?.length > 0) {
-                this.competitionEntries = competitionEntries.sort(function (a: ICompetitionEntry, b: ICompetitionEntry) {
-                    let aVotes = a.voterRefs?.length || 0;
-                    let bVotes = b.voterRefs?.length || 0;
-                    return bVotes - aVotes;
-                });
+                if (this.props.competitionMode === ICompetitionMode.archived) {
+                    this.competitionEntries = competitionEntries.sort(function (a: ICompetitionEntry, b: ICompetitionEntry) {
+                        let aVotes = a.voterRefs?.length || 0;
+                        let bVotes = b.voterRefs?.length || 0;
+                        return bVotes - aVotes;
+                    });
+                } else {
+                    this.competitionEntries = competitionEntries;
+                }
                 if (this.props.competitionMode === ICompetitionMode.live && this.props.currentUserRef) {
                     const userRef = this.props.currentUserRef || '';
                     this.entryVotedFor = this.competitionEntries?.find((entry) => entry.voterRefs?.includes(userRef))?.id;
@@ -57,6 +61,7 @@ export class CompetitionDetail extends React.Component<ICompetitionDetailProps> 
         if (selectedEntryToVote && this.props.currentUserRef) {
             let voterRefs = selectedEntryToVote?.voterRefs ? selectedEntryToVote.voterRefs : [];
             selectedEntryToVote.voterRefs = [this.props.currentUserRef, ...voterRefs];
+            console.log('on entry voted', voterRefs, selectedEntryToVote);
             writeToCollection('competitionEntries', selectedEntryToVote.id, selectedEntryToVote).then((ret) => {
                 if (ret === true) {
                     this.loadCompetitionEntries();
@@ -75,7 +80,7 @@ export class CompetitionDetail extends React.Component<ICompetitionDetailProps> 
             votes={this.props.competitionMode === ICompetitionMode.archived ? competition.voterRefs?.length : undefined}
             rank={this.props.competitionMode === ICompetitionMode.archived ? rank : undefined}
             isEntry={true}
-            hasBeenVoted={this.entryVotedFor !== undefined && competition.id === this.entryVotedFor}
+            hasBeenCompleted={this.entryVotedFor !== undefined && competition.id === this.entryVotedFor}
             votingDisabled={this.entryVotedFor !== undefined && competition.id !== this.entryVotedFor}
             competitionMode={this.props.competitionMode}
             onCardClicked={() => this.setShowImage(competition.imgSrc)}

@@ -81,7 +81,7 @@ export class RegisterUser extends React.Component<IRegisterUserProps> {
                 let userDetails: firebase.auth.UserCredential = (ret as firebase.auth.UserCredential);
                 let uid = userDetails.user?.uid;
                 writeToCollection('users', uid!, { userName: this.userInfo.name, email: this.userInfo.email, id: uid }).then((userNameRet) => {
-                    if (userNameRet === undefined) {
+                    if (userNameRet === true) {
                         this.props.onUserRegistered();
                     }
                 });

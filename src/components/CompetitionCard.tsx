@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonCard, IonCardTitle, IonCardSubtitle, IonCardHeader, IonIcon, IonButton } from '@ionic/react';
+import { IonCard, IonChip, IonLabel, IonCardTitle, IonCardSubtitle, IonCardHeader, IonIcon, IonButton } from '@ionic/react';
 import { ICompetitionMode } from '../interfaces';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 
@@ -16,7 +16,7 @@ interface ICompetitionCardProps {
     startDate?: string;
     endDate?: string;
     userName?: string;
-    hasBeenVoted?: boolean;
+    hasBeenCompleted?: boolean;
     votingDisabled?: boolean;
     onCardClicked: any;
     onCardVoted?: any;
@@ -25,29 +25,28 @@ interface ICompetitionCardProps {
 export class CompetitionCard extends React.Component<ICompetitionCardProps> {
 
     render() {
-        return <IonCard class={`hydrated focus ${this.props.isEntry ? 'entry' : ''} ${this.props.hasBeenVoted ? 'voted' : ''}`} onClick={() => this.props.onCardClicked()}>
+        return <IonCard class={`hydrated focus ${this.props.isEntry ? 'entry' : ''} ${this.props.hasBeenCompleted ? 'voted' : ''}`} onClick={() => this.props.onCardClicked()}>
             <div className="image-container">
                 <img src={this.props.imgSrc} />
             </div>
             <IonCardHeader>
                 <IonCardTitle class="force-white">{`${this.props.rank ? `#${this.props.rank}: ` : ''}${this.props.title}`}</IonCardTitle>
             </IonCardHeader>
-            {this.props.isEntry && this.props.competitionMode === ICompetitionMode.live && <IonButton
+            {this.props.isEntry && this.props.competitionMode === ICompetitionMode.live && !this.props.hasBeenCompleted && <IonButton
                 onClick={(ev) => {
                     ev.stopPropagation();
-                    if (!this.props.hasBeenVoted) {
-                        this.props.onCardVoted();
-                    }
+                    this.props.onCardVoted();
                 }}
                 disabled={this.props.votingDisabled}
                 className="vote-button"
                 color="primary">
-                {this.props.hasBeenVoted ?
-                    <IonIcon size="large" icon={checkmarkCircleOutline} /> :
-                    'Vote'
-                }
+                Vote
             </IonButton>
             }
+            {this.props.hasBeenCompleted && <IonChip>
+                <IonLabel>{this.props.isEntry && this.props.competitionMode === ICompetitionMode.live ? 'Voted' : 'Entered'}</IonLabel>
+                <IonIcon icon={checkmarkCircleOutline} />
+            </IonChip>}
             <div className="subtitle-container">
                 <IonCardSubtitle>{this.props.description}</IonCardSubtitle>
                 {this.props.userName && <IonCardSubtitle>{`Submitted by: ${this.props.userName}${this.props.votes ? ` - ${this.props.votes} votes` : ''}`}</IonCardSubtitle>}
