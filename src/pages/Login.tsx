@@ -23,9 +23,7 @@ const Login: React.FC = () => {
             } 
         });
         setTimeout(() => {
-            
             isUserLoggedIn().then((ret) => {
-                console.log('is user logged in?', ret);
                 if (ret) {
                     history.push('/homePage');
                 } 
