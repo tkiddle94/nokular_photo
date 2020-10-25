@@ -103,6 +103,7 @@ export class CompetitionDetail extends React.Component<ICompetitionDetailProps> 
             </IonContent>
             <IonModal
                 isOpen={this.showImage !== undefined}
+                onDidDismiss={() => this.setShowImage(undefined)}
                 swipeToClose={true}
             >
                 <ImageViewer
