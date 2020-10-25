@@ -63,6 +63,7 @@ const Home: React.FC = () => {
   }
 
   function renderCompetitionCards(competition: ICompetition) {
+    const hasBeenCompleted = competition?.entrantRefs?.includes(userId || '')
     return <CompetitionCard
       key={competition.id}
       title={competition.title}
@@ -71,8 +72,13 @@ const Home: React.FC = () => {
       competitionMode={getCompetitionMode(competition)}
       startDate={competition.startDate}
       endDate={competition.endDate}
+      hasBeenCompleted={hasBeenCompleted}
       isEntry={false}
-      onCardClicked={() => setSelectedCompetition(competition)} />;
+      onCardClicked={() => {
+        if (!hasBeenCompleted) {
+          setSelectedCompetition(competition)
+        }
+      }} />;
   }
 
   return (
@@ -117,9 +123,11 @@ const Home: React.FC = () => {
       >
         <CompetitionEntry
           userRef={userId}
-          competitionRef={selectedCompetition?.id}
-          startDate={selectedCompetition?.startDate}
-          close={() => setSelectedCompetition(undefined)}
+          selectedCompetition={selectedCompetition}
+          close={() => {
+            setSelectedCompetition(undefined);
+            loadCompetitions();
+          }}
         />
       </IonModal>
     </IonPage>

@@ -75,7 +75,7 @@ export class CompetitionDetail extends React.Component<ICompetitionDetailProps> 
             votes={this.props.competitionMode === ICompetitionMode.archived ? competition.voterRefs?.length : undefined}
             rank={this.props.competitionMode === ICompetitionMode.archived ? rank : undefined}
             isEntry={true}
-            hasBeenVoted={this.entryVotedFor !== undefined && competition.id === this.entryVotedFor}
+            hasBeenCompleted={this.entryVotedFor !== undefined && competition.id === this.entryVotedFor}
             votingDisabled={this.entryVotedFor !== undefined && competition.id !== this.entryVotedFor}
             competitionMode={this.props.competitionMode}
             onCardClicked={() => this.setShowImage(competition.imgSrc)}
